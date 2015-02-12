@@ -51,6 +51,14 @@ std::vector<std::string>* LSTable::getItemData(int item_num) {
 
 int LSTable::appendData(int item_num, std::vector<std::string> item_data) {
   if ( item_data.size() != nb_fields ) return 1;
+
+  /*
+  //debug
+  for (int i=0;i<item_data.size();i++) {
+    if ( item_data[i] == "" ) cout << "WARNING: item value " << i << " is NULL" << endl;
+  }
+  */
+
   data[item_num] = item_data;
   return 0;
 }

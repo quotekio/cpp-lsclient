@@ -195,26 +195,34 @@ size_t LSClient::streamCallbackWrapper(void* ptr, size_t size, size_t nmemb, voi
       if (lsc->getStatus() == LS_STATUS_CONNECTED || 
           lsc->getStatus() == LS_STATUS_RECEIVING ) {
 
-        //debug
-        //cout << ls_stream << endl;
-
         //actually parses data comming in stream connection
         if ( ls_stream.find("|") != std::string::npos )  {
 
           lsc->setStatus(LS_STATUS_RECEIVING);
 
-          std::vector<std::string> values = split(ls_stream,'|');
-          std::vector<std::string> values_map = split(values[0],',');
+          std::vector<std::string> lines = split(ls_stream,'\n');
 
-          int tnum = atoi(values_map[0].c_str());
-          int indices_num = atoi(values_map[1].c_str()) - 1;
+          for (int i=0;i< lines.size();i++) {
+ 
+            std::string line = lines[i];
+            trim(line);
 
-          values.erase(values.begin());
-          LSTable::append(tnum, indices_num, values);
+            if (line != "") {
 
+              //debug
+              //cout << line << endl << "==============" << endl ;
 
+              std::vector<std::string> values = split(line,'|');
+              std::vector<std::string> values_map = split(values[0],',');
+
+              int tnum = atoi(values_map[0].c_str());
+              int indices_num = atoi(values_map[1].c_str()) - 1;
+
+              values.erase(values.begin());
+              LSTable::append(tnum, indices_num, values);
+            }
+          }
         } 
-
       }
       
       std::vector<std::string> resdata = split(ls_stream,'\n');
