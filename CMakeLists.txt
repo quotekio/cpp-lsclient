@@ -19,13 +19,11 @@ add_executable(
   sample.cpp
 )
 
-find_library (PTHREAD pthread) 
 find_library (CURL curl)
 
 target_link_libraries(
   lsclient
   curl
-  pthread
 )
 
 target_link_libraries(

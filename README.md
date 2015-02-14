@@ -1,10 +1,19 @@
-cpp-lsclient 0.1
+cpp-lsclient 0.2
 ================
 
 cpp-lsclient is a C++ implementation of a Lightstreamer Client.
 So far it only implements a subset of Lightstreamer client features but it already
 works fine for objects subscribing and receiving data. cpp-lsclient is built arround libcurl and POSIX threads, and makes extensive use of std::vector data structures because of their pretty good performance ( O(1) accessors, O(n) modifiers).
 
+Changelog
+---------
+
+### 0.2:
+
+* Bugfix: processing of multiple rows in a single payload
+* Auto rebinding of the stream connection in case of closing ( reached Content-Length, etc..)
+* Replacement of POSIX threads usage by C++11 std::thread for easier portability (windows)
+* Improved documentation
 
 Dependancies
 ------------
@@ -54,7 +63,7 @@ Building cpp-lsclient on windows platforms can be a bit more tricky.
 and select the following packages during setup: cmake, libcurl, gcc, g++.
 Then, you just have to follow the Linux compile and install intructions above. 
 
-* The second option is to install the libcurl and pthread windows ports ( can be found respectively at http://curl.haxx.se/download.html and http://sourceforge.net/projects/pthreads4w/ ) and build the LSClient library in your favorite IDE.
+* The second option is to install the libcurl windows port ( can be found at http://curl.haxx.se/download.html) and build the LSClient library in your favorite IDE.
 
 
 Sample Usage
@@ -106,3 +115,11 @@ LSTable* t = lsc->getSubscriptions()->at(0)->table_ref;
 
 }
 ```
+
+TODO
+----
+
+* Replacement of libcurl by cpp-netlib in order to be fully portable (coming soon)
+* Implementation of unit and functional tests.
+* Full Lightstreamer protocol support.
+* Improve LSTable data accessor to be more easy/convenient.

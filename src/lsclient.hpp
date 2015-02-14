@@ -29,7 +29,7 @@ THE USE OF THIS SOFTWARE,EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <vector>
 #include <string>
-#include <pthread.h>
+#include <thread>
 #include "lssubscription.hpp"
 #include "lstable.hpp"
 #include "utils.hpp"
@@ -78,10 +78,16 @@ class LSClient {
      */
     void start();
 
+    static void threadStart(LSClient* lsc);
+
     /** This Initiates the Lightstreamer Stream Connection. If you plan to use this method manually,
      *  wrap it in a thread.
      */
     int connect();
+
+    /** This function rebinds the LSClient Stream Connection in case of unexpected closing.
+    */
+    int rebind();
 
     /** Sets the Lightstreamer Client status. It not meant to be used directly but needs to
      *  remain public.
@@ -114,8 +120,7 @@ class LSClient {
      *  parsing loop. 
      */
     static size_t streamCallbackWrapper(void*, size_t, size_t, void*);
-    static void* streamThreadWrapper(void*);
-    
+
     /** Sets the Lightstreamer Client Session ID.
      *  @param sessid The Sesion ID returned by the Stream connection.
      */
@@ -136,5 +141,5 @@ class LSClient {
     std::string ls_adapter_set;
   	std::vector<LSSubscription*> ls_subscriptions;
     int ls_status;
-    pthread_t stream_thread;
+    std::thread* stream_thread;
 };

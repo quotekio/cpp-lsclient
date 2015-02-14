@@ -59,15 +59,18 @@ LSClient::LSClient(std::string url,
 
 }
 
-
-
 void LSClient::start()  {
-  pthread_create(&stream_thread, NULL, LSClient::streamThreadWrapper, this);
+  stream_thread = new std::thread(LSClient::threadStart,this);
+
 }
 
-void* LSClient::streamThreadWrapper(void* lsc) {
-  static_cast<LSClient*>(lsc)->connect();
-  return NULL;
+void LSClient::threadStart(LSClient* lsc) {
+
+  lsc->connect();
+  while(1) {
+    cout  << "[LSClient] Stream connection closed, trying to reopen it." << endl;
+    lsc->rebind();
+  }
 }
 
 int LSClient::connect() {
@@ -90,6 +93,24 @@ int LSClient::connect() {
   return 0;
 
 }
+
+int LSClient::rebind() {
+
+  http* req = new http();
+  AssocArray<string> pdata;
+  pdata["LS_session"] = ls_session_id;
+  std::string bind_session_url = ls_endpoint + "/lightstreamer/bind_session.txt";
+
+  //sets stream callback
+  CURL* ch = req->get_curl_handler();
+  curl_easy_setopt(ch, CURLOPT_WRITEFUNCTION, &LSClient::streamCallbackWrapper);
+  curl_easy_setopt(ch,CURLOPT_WRITEDATA, this);
+  req->post2(bind_session_url, pdata);
+
+  return 0;
+
+}
+
 
 
 int LSClient::subscribe(int subscription_index, 
